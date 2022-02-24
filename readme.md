@@ -6,7 +6,7 @@
 >> deploy包直接从PaddleDetection项目copy过来使用
 
 
-####注:
+#### 注:
 
 1. Windows环境下，需要手动下载安装[cython_bbox](https://pypi.org/search/?q=cython_bbox) ，然后将setup.py中的找到steup.py, 修改extra_compile_args=[’-Wno-cpp’]，替换为extra_compile_args = {'gcc': ['/Qstd=c99']}, 然后运行
     ```
