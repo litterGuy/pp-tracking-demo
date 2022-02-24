@@ -1,0 +1,8 @@
+.idea
+/input/*
+!/input/.gitkeep
+output/*
+!output/.gitkeep
+output_inference/*
+!output_inference/.gitkeep
+venv/*
