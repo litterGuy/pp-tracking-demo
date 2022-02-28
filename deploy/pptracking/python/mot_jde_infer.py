@@ -13,23 +13,18 @@
 # limitations under the License.
 
 import os
-import time
-import yaml
-import cv2
-import numpy as np
 from collections import defaultdict
 
+import cv2
 import paddle
-from paddle.inference import Config
-from paddle.inference import create_predictor
 
-from utils import argsparser, Timer, get_current_memory_mb
-from det_infer import Detector, get_test_images, print_arguments, PredictConfig
+import backend.service.output_hook
 from benchmark_utils import PaddleInferBenchmark
-from visualize import plot_tracking_dict
-
+from det_infer import Detector, get_test_images, print_arguments, PredictConfig
 from mot.tracker import JDETracker
 from mot.utils import MOTTimer, write_mot_results, flow_statistic
+from utils import argsparser, get_current_memory_mb
+from visualize import plot_tracking_dict
 
 # Global dictionary
 MOT_SUPPORT_MODELS = {
@@ -114,7 +109,7 @@ class JDE_Detector(Detector):
                 if tlwh[2] * tlwh[3] <= self.tracker.min_box_area:
                     continue
                 if self.tracker.vertical_ratio > 0 and tlwh[2] / tlwh[
-                        3] > self.tracker.vertical_ratio:
+                    3] > self.tracker.vertical_ratio:
                     continue
                 online_tlwhs[cls_id].append(tlwh)
                 online_ids[cls_id].append(tid)
@@ -317,6 +312,15 @@ def predict_video(detector,
                 os.makedirs(save_dir)
             cv2.imwrite(
                 os.path.join(save_dir, '{:05d}.jpg'.format(frame_id)), im)
+
+            # 增加钩子，用于实时输出识别数据进行业务判断
+            out_data = backend.service.output_hook.OutputData()
+            out_data.id_set = online_ids[0]
+            out_data.frame_id = frame_id
+            out_data.save_dir = os.path.join(save_dir, '{:05d}.jpg'.format(frame_id))
+            out_data.frame_count = frame_count
+            backend.service.output_hook.hook.handle_notice(out_data)
+
         else:
             writer.write(im)
 
