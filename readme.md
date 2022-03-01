@@ -4,6 +4,21 @@
 
 > PaddleDetection使用版本release-2.3.0
 >> deploy包直接从PaddleDetection项目copy过来使用
+>> deploy/pptracking/python/mot_jde_infer.py 文件做过修改，替换包时请注意该文件的变动
+
+```angular2html
+ # 增加钩子，用于实时输出识别数据进行业务判断
+out_data = backend.service.output_hook.OutputData()
+out_data.id_set = online_ids[0]
+out_data.frame_id = frame_id
+out_data.save_dir = os.path.join(save_dir, '{:05d}.jpg'.format(frame_id))
+out_data.frame_count = frame_count
+backend.service.output_hook.hook.handle_notice(out_data)
+```
+
+```angular2html
+sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+```
 
 #### 注:
 
@@ -55,3 +70,22 @@ python backend/main.py [--port=8092]
 ```shell script
 Server is running: http://192.168.0.18:8092
 ```   
+
+### Docker部署  
+使用 Dockerfile 构建 或者直接 Pull镜像  
+```shell script
+# dockerfile 构建
+docker build -t pp-tracking-demo:latest .
+
+# 运行镜像
+docker run -itd --rm -p 8092:8092 --name pp-tracking-demo pp-tracking-demo:latest 
+```  
+
+```shell script
+# 从 dockerhub pull
+docker pull litterguy/pp-tracking-demo:latest
+
+# 运行镜像
+docker run -itd --rm -p 8092:8092 --name pp-tracking-demo litterguy/pp-tracking-demo:latest 
+```  
+这里把容器的8091端口映射到了物理机的8092上，但如果你不喜欢映射，去掉run后面的`-p 8092:8092` 也可以使用docker的IP加`8092`来访问  
