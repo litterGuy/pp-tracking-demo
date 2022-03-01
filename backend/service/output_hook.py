@@ -4,6 +4,15 @@ import json
 from backend.service.notice_hook import NoticeHook
 from backend.ws.connect_tracking import ProStatus
 
+"""
+todo 
+ws全部通知的问题，可以在这里使用ThreadLocal对象处理
+local = threading.local()
+1. ws创建时对连接创建返回一个uuid作为标识，ProStatus.connector存储按照字段，uuid为key
+2. 页面识别请求时，把该uuid当作参数传递
+3. 获取线程局部变量local的uuid值，发送ws消息
+4. cacheOutputData值同样需要如此设置
+"""
 
 class OutputData(object):
     def __init__(self):
