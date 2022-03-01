@@ -6,4 +6,5 @@ output/*
 output_inference/*
 !output_inference/.gitkeep
 venv/*
+*.log
 *.pyc

@@ -13,10 +13,13 @@
 # limitations under the License.
 
 import os
+import sys
 from collections import defaultdict
 
 import cv2
 import paddle
+
+sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 
 import backend.service.output_hook
 from benchmark_utils import PaddleInferBenchmark
